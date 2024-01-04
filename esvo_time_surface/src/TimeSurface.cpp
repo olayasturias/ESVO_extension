@@ -148,7 +148,7 @@ namespace esvo_time_surface
 			cv_bridge::CvImage cv_image2;
 			cv_image2.encoding = cv_image.encoding;
 			cv_image2.header.stamp = external_sync_time;
-			cv::remap(cv_image.image, cv_image2.image, undistort_map1_, undistort_map2_, CV_INTER_LINEAR);
+			cv::remap(cv_image.image, cv_image2.image, undistort_map1_, undistort_map2_, cv::INTER_LINEAR);
 			time_surface_pub_.publish(cv_image2.toImageMsg());
 		}
 	}
@@ -221,7 +221,7 @@ namespace esvo_time_surface
 			cv_bridge::CvImage cv_image2;
 			cv_image2.encoding = cv_image.encoding;
 			cv_image2.header.stamp = external_sync_time;
-			cv::remap(cv_image.image, cv_image2.image, undistort_map1_, undistort_map2_, CV_INTER_LINEAR);
+			cv::remap(cv_image.image, cv_image2.image, undistort_map1_, undistort_map2_, cv::INTER_LINEAR);
 			time_surface_pub_.publish(cv_image2.toImageMsg());
 		}
 	}
