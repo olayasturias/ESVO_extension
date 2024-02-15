@@ -50,7 +50,7 @@ void esvo_core::core::EventMatcher::resetParameters(
 void esvo_core::core::EventMatcher::createMatchProblem(
   StampedTimeSurfaceObs* pTS_obs,
   std::vector<EventSlice>* vEventSlice_ptr,
-  std::vector<dvs_msgs::Event*>* vEventPtr_cand)
+  std::vector<dvs_msgs::msg::Event*>* vEventPtr_cand)
 {
   pTS_obs_ = pTS_obs;
   pvEventSlice_ = vEventSlice_ptr;
@@ -58,16 +58,16 @@ void esvo_core::core::EventMatcher::createMatchProblem(
 }
 
 bool esvo_core::core::EventMatcher::match_an_event(
-  dvs_msgs::Event* ev_ptr,
+  dvs_msgs::msg::Event* ev_ptr,
   Transformation &Trans_world_rv,
   EventMatchPair &emPair)
 {
-  std::vector<std::vector<dvs_msgs::Event*>::iterator> candidates_time_check, candidates_epipolar_check, candidates_motion_check;
+  std::vector<std::vector<dvs_msgs::msg::Event*>::iterator> candidates_time_check, candidates_epipolar_check, candidates_motion_check;
   //--- temporal check
   ros::Time time_lowBound(ev_ptr->ts.toSec() - Time_THRESHOLD_ / 2);
   ros::Time time_upBound(ev_ptr->ts.toSec() + Time_THRESHOLD_ / 2);
-  std::vector<dvs_msgs::Event*>::iterator candidate_begin_it = EventVecPtr_lower_bound(*pvCandEventPtr_, time_lowBound);
-  std::vector<dvs_msgs::Event*>::iterator candidate_end_it = EventVecPtr_lower_bound(*pvCandEventPtr_, time_upBound);
+  std::vector<dvs_msgs::msg::Event*>::iterator candidate_begin_it = EventVecPtr_lower_bound(*pvCandEventPtr_, time_lowBound);
+  std::vector<dvs_msgs::msg::Event*>::iterator candidate_end_it = EventVecPtr_lower_bound(*pvCandEventPtr_, time_upBound);
 
   if (candidate_begin_it != candidate_end_it)
   {

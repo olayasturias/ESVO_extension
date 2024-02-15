@@ -19,7 +19,7 @@ class EventBM
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     size_t i_thread_;
-    std::vector<dvs_msgs::Event*>* pvEventPtr_;
+    std::vector<dvs_msgs::msg::Event*>* pvEventPtr_;
     std::vector<std::pair<size_t, size_t> >* pvpDisparitySearchBound_;
     std::shared_ptr<std::vector<EventMatchPair> > pvEventMatchPair_;
   };
@@ -49,10 +49,10 @@ public:
   void createMatchProblem(
     StampedTimeSurfaceObs * pStampedTsObs,
     StampTransformationMap * pSt_map,
-    std::vector<dvs_msgs::Event *>* pvEventsPtr);
+    std::vector<dvs_msgs::msg::Event *>* pvEventsPtr);
 
   bool match_an_event(
-    dvs_msgs::Event *pEvent,
+    dvs_msgs::msg::Event *pEvent,
     std::pair<size_t, size_t>& pDisparityBound,
     EventMatchPair &emPair);
 
@@ -71,7 +71,7 @@ private:
   CameraSystem::Ptr camSysPtr_;
   StampedTimeSurfaceObs* pStampedTsObs_;
   StampTransformationMap * pSt_map_;
-  std::vector<dvs_msgs::Event*> vEventsPtr_;
+  std::vector<dvs_msgs::msg::Event*> vEventsPtr_;
   std::vector<std::pair<size_t, size_t> > vpDisparitySearchBound_;
   Sobel sb_;
 

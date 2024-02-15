@@ -1,15 +1,15 @@
-#include <esvo_time_surface/TimeSurface.h>
+#include "esvo_time_surface/TimeSurface.h"
+#include <rclcpp/rclcpp.hpp>
 
 int main(int argc, char* argv[])
 {
-  ros::init(argc, argv, "esvo_time_surface");
+  rclcpp::init(argc, argv);
+  
+  auto ts_node = std::make_shared<esvo_time_surface::TimeSurface>();
 
-  ros::NodeHandle nh;
-  ros::NodeHandle nh_private("~");
+  rclcpp::spin(ts_node);
 
-  esvo_time_surface::TimeSurface ts(nh, nh_private);
-
-  ros::spin();
+  rclcpp::shutdown();
 
   return 0;
 }

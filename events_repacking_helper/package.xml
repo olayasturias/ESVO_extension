@@ -1,26 +1,23 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>events_repacking_helper</name>
   <version>0.0.0</version>
   <description>The events_repacking_helper package</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <maintainer email="eeyzhou@ust.hk">zhouyi</maintainer>
+  <maintainer email="your_email@example.com">Your Name</maintainer>
+  <license>Apache 2.0</license>
 
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>GPLv3</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <depend>rosbag</depend>
-  <depend>roscpp</depend>
-  <depend>rospy</depend>
+  <depend>rclcpp</depend>
   <depend>std_msgs</depend>
-  <depend>dvs_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
 
-  <!-- The export tag contains other, unspecified, tags -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
   <export>
-    <!-- Other tools can request additional information be placed here -->
+    <!-- Other export tags are optional and depend on your package's needs -->
   </export>
 </package>

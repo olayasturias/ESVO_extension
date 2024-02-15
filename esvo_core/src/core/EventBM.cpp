@@ -56,7 +56,7 @@ void esvo_core::core::EventBM::resetParameters(
 void esvo_core::core::EventBM::createMatchProblem(
     StampedTimeSurfaceObs *pStampedTsObs,
     StampTransformationMap *pSt_map,
-    std::vector<dvs_msgs::Event *> *pvEventsPtr)
+    std::vector<dvs_msgs::msg::Event *> *pvEventsPtr)
 {
   pStampedTsObs_ = pStampedTsObs;
   pSt_map_ = pSt_map;
@@ -78,7 +78,7 @@ void esvo_core::core::EventBM::createMatchProblem(
 }
 
 bool esvo_core::core::EventBM::match_an_event(
-    dvs_msgs::Event *pEvent,
+    dvs_msgs::msg::Event *pEvent,
     std::pair<size_t, size_t> &pDisparityBound,
     esvo_core::core::EventMatchPair &emPair)
 {

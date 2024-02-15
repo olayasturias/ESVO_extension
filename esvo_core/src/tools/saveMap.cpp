@@ -31,7 +31,7 @@ T param(const ros::NodeHandle &nh, const std::string &name, const T &defaultValu
     return defaultValue;
 }
 
-void eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg)
+void eventsCallback(const dvs_msgs::msg::EventArray::ConstPtr &msg)
 {
     accumulateEvent += msg->events.size();
 }
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
     strDataset = param(nh_private, "Dataset_Name", std::string("rpg"));
     strSequence = param(nh_private, "Sequence_Name", std::string("shapes_poster"));
 
-    ros::Subscriber events_sub = nh.subscribe<dvs_msgs::EventArray>("events", 0, eventsCallback);
+    ros::Subscriber events_sub = nh.subscribe<dvs_msgs::msg::EventArray>("events", 0, eventsCallback);
     ros::Subscriber map_sub = nh.subscribe("pointcloud", 0, refMapCallback);
     PC_ptr.reset(new pcl::PointCloud<pcl::PointXYZ>());
     accumulateEvent = 0;

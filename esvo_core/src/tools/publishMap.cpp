@@ -46,7 +46,7 @@ void timeSurfaceCallback(const sensor_msgs::ImageConstPtr &time_surface_left)
     TS_number++;
 }
 
-void eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg)
+void eventsCallback(const dvs_msgs::msg::EventArray::ConstPtr &msg)
 {
     EM_latest_timestamp = msg->header.stamp;
     event_number += msg->events.size();

@@ -85,7 +85,7 @@ inline void Grid3D::accumulateGridValueAt(const float x_f, const float y_f, floa
 {
   if (x_f >= 0.f && y_f >= 0.f) // check if stay in the DSI
   {
-    const int x = x_f, y = y_f;
+    const unsigned int x = static_cast<unsigned int>(x_f), y = static_cast<unsigned int>(y_f);
     if (x + 1 < size_[0] &&
         y + 1 < size_[1])
     {

@@ -58,7 +58,7 @@ namespace esvo_core
 
     // callback functions
     void stampedPoseCallback(const geometry_msgs::PoseStampedConstPtr &ps_msg);
-    void eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg, EventQueue &EQ);
+    void eventsCallback(const dvs_msgs::msg::EventArray::ConstPtr &msg, EventQueue &EQ);
     void timeSurfaceCallback(
         const sensor_msgs::ImageConstPtr &time_surface_left,
         const sensor_msgs::ImageConstPtr &time_surface_right);
@@ -86,7 +86,7 @@ namespace esvo_core
 
     /*** event processing ***/
     void createEdgeMask(
-        std::vector<dvs_msgs::Event *> &vEventsPtr,
+        std::vector<dvs_msgs::msg::Event *> &vEventsPtr,
         PerspectiveCamera::Ptr &camPtr,
         cv::Mat &edgeMap,
         std::vector<std::pair<size_t, size_t>> &vEdgeletCoordinates,
@@ -94,13 +94,13 @@ namespace esvo_core
         size_t radius = 0);
 
     void createDenoisingMask(
-        std::vector<dvs_msgs::Event *> &vAllEventsPtr,
+        std::vector<dvs_msgs::msg::Event *> &vAllEventsPtr,
         cv::Mat &mask,
         size_t row, size_t col); // reserve in this file
 
     void extractDenoisedEvents(
-        std::vector<dvs_msgs::Event *> &vCloseEventsPtr,
-        std::vector<dvs_msgs::Event *> &vEdgeEventsPtr,
+        std::vector<dvs_msgs::msg::Event *> &vCloseEventsPtr,
+        std::vector<dvs_msgs::msg::Event *> &vEdgeEventsPtr,
         cv::Mat &mask,
         size_t maxNum = 5000);
 
@@ -151,11 +151,11 @@ namespace esvo_core
     EventBM ebm_;
 
     // data transfer
-    std::vector<dvs_msgs::Event *> vALLEventsPtr_left_;      // for BM
-    std::vector<dvs_msgs::Event *> vCloseEventsPtr_left_;    // for BM
-    std::vector<dvs_msgs::Event *> vDenoisedEventsPtr_left_; // for BM
+    std::vector<dvs_msgs::msg::Event *> vALLEventsPtr_left_;      // for BM
+    std::vector<dvs_msgs::msg::Event *> vCloseEventsPtr_left_;    // for BM
+    std::vector<dvs_msgs::msg::Event *> vDenoisedEventsPtr_left_; // for BM
     size_t totalNumCount_;                                   // count the number of events involved
-    std::vector<dvs_msgs::Event *> vEventsPtr_left_SGM_;     // for SGM
+    std::vector<dvs_msgs::msg::Event *> vEventsPtr_left_SGM_;     // for SGM
 
     // result
     PointCloud::Ptr pc_, pc_near_, pc_global_;

@@ -105,7 +105,7 @@ namespace esvo_core
 		nh_.setParam("/ESVO_SYSTEM_STATUS", ESVO_System_Status_);
 
 		// callback functions
-		events_left_sub_ = nh_.subscribe<dvs_msgs::EventArray>("events_left", 10, boost::bind(&esvo_MonoMapping::eventsCallback, this, _1, boost::ref(events_left_)));
+		events_left_sub_ = nh_.subscribe<dvs_msgs::msg::EventArray>("events_left", 10, boost::bind(&esvo_MonoMapping::eventsCallback, this, _1, boost::ref(events_left_)));
 		stampedPose_sub_ = nh_.subscribe("stamped_pose", 0, &esvo_MonoMapping::stampedPoseCallback, this);
 		TS_left_sub_ = nh_.subscribe("time_surface_left", 10, &esvo_MonoMapping::timeSurfaceCallback, this);
 		// TF
@@ -785,7 +785,7 @@ namespace esvo_core
 		}
 	}
 
-	void esvo_MonoMapping::eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg,
+	void esvo_MonoMapping::eventsCallback(const dvs_msgs::msg::EventArray::ConstPtr &msg,
 										  EventQueue &EQ)
 	{
 		std::lock_guard<std::mutex> lock(data_mutex_);
@@ -806,7 +806,7 @@ namespace esvo_core
 		}
 
 		// add new ones and remove old ones
-		for (const dvs_msgs::Event &e : msg->events)
+		for (const dvs_msgs::msg::Event &e : msg->events)
 		{
 			EQ.push_back(e);
 			int i = EQ.size() - 2;
@@ -1196,7 +1196,7 @@ namespace esvo_core
 		pub.publish(msg);
 	}
 
-	void esvo_MonoMapping::createEdgeMask(std::vector<dvs_msgs::Event *> &vEventsPtr,
+	void esvo_MonoMapping::createEdgeMask(std::vector<dvs_msgs::msg::Event *> &vEventsPtr,
 										  PerspectiveCamera::Ptr &camPtr,
 										  cv::Mat &edgeMap,
 										  std::vector<std::pair<size_t, size_t>> &vEdgeletCoordinates,
@@ -1242,7 +1242,7 @@ namespace esvo_core
 		}
 	}
 
-	void esvo_MonoMapping::createDenoisingMask(std::vector<dvs_msgs::Event *> &vAllEventsPtr,
+	void esvo_MonoMapping::createDenoisingMask(std::vector<dvs_msgs::msg::Event *> &vAllEventsPtr,
 											   cv::Mat &mask,
 											   size_t row, size_t col)
 	{
@@ -1251,8 +1251,8 @@ namespace esvo_core
 		cv::medianBlur(eventMap, mask, 3);
 	}
 
-	void esvo_MonoMapping::extractDenoisedEvents(std::vector<dvs_msgs::Event *> &vCloseEventsPtr,
-												 std::vector<dvs_msgs::Event *> &vEdgeEventsPtr,
+	void esvo_MonoMapping::extractDenoisedEvents(std::vector<dvs_msgs::msg::Event *> &vCloseEventsPtr,
+												 std::vector<dvs_msgs::msg::Event *> &vEdgeEventsPtr,
 												 cv::Mat &mask,
 												 size_t maxNum)
 	{

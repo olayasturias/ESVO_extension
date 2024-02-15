@@ -23,7 +23,7 @@ struct EventSlice
   double SLICE_THICKNESS_;
   ros::Time t_median_;// used for Transformation iterpolation
   tools::Transformation transf_;
-  std::vector<dvs_msgs::Event*>::iterator it_begin_, it_end_;
+  std::vector<dvs_msgs::msg::Event*>::iterator it_begin_, it_end_;
 };
 
 class EventMatcher
@@ -32,7 +32,7 @@ class EventMatcher
   {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     size_t i_thread_;
-    std::vector<dvs_msgs::Event*>::iterator vEventPtr_it_begin_;
+    std::vector<dvs_msgs::msg::Event*>::iterator vEventPtr_it_begin_;
     std::vector<EventSlice>* pvEventSlice_;
     std::vector<size_t>* pvIndexEventSlice_;
     std::shared_ptr< std::vector<EventMatchPair> > pvEventMatchPair_;
@@ -62,10 +62,10 @@ class EventMatcher
   void createMatchProblem(
     StampedTimeSurfaceObs * pTS_obs,
     std::vector<EventSlice>* vEventSlice_ptr,
-    std::vector<dvs_msgs::Event*>* vEventPtr_cand);
+    std::vector<dvs_msgs::msg::Event*>* vEventPtr_cand);
 
   bool match_an_event(
-    dvs_msgs::Event* ev_ptr,
+    dvs_msgs::msg::Event* ev_ptr,
     Transformation &Trans_world_rv,
     EventMatchPair &emPair);
 
@@ -97,7 +97,7 @@ class EventMatcher
 
   StampedTimeSurfaceObs * pTS_obs_;
   std::vector<EventSlice>* pvEventSlice_;
-  std::vector<dvs_msgs::Event*>* pvCandEventPtr_;
+  std::vector<dvs_msgs::msg::Event*>* pvCandEventPtr_;
 };
 }
 }

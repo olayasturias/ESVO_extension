@@ -132,8 +132,8 @@ namespace esvo_core
                          BM_step_, BM_ZNCC_Threshold_, BM_bUpDownConfiguration_);
 
     // callbacks functions
-    events_left_sub_ = nh_.subscribe<dvs_msgs::EventArray>("events_left", 0, boost::bind(&esvo_MVStereo::eventsCallback, this, _1, boost::ref(events_left_)));
-    events_right_sub_ = nh_.subscribe<dvs_msgs::EventArray>("events_right", 0, boost::bind(&esvo_MVStereo::eventsCallback, this, _1, boost::ref(events_right_)));
+    events_left_sub_ = nh_.subscribe<dvs_msgs::msg::EventArray>("events_left", 0, boost::bind(&esvo_MVStereo::eventsCallback, this, _1, boost::ref(events_left_)));
+    events_right_sub_ = nh_.subscribe<dvs_msgs::msg::EventArray>("events_right", 0, boost::bind(&esvo_MVStereo::eventsCallback, this, _1, boost::ref(events_right_)));
     stampedPose_sub_ = nh_.subscribe("stamped_pose", 0, &esvo_MVStereo::stampedPoseCallback, this);
     TS_sync_.registerCallback(boost::bind(&esvo_MVStereo::timeSurfaceCallback, this, _1, _2));
     // TF
@@ -793,7 +793,7 @@ bool esvo_MVStereo::getPoseAt(const ros::Time &t,
 }
 
 void esvo_MVStereo::eventsCallback(
-  const dvs_msgs::EventArray::ConstPtr& msg,
+  const dvs_msgs::msg::EventArray::ConstPtr& msg,
   EventQueue& EQ)
 {
   std::lock_guard<std::mutex> lock(data_mutex_);
@@ -814,7 +814,7 @@ void esvo_MVStereo::eventsCallback(
   }
 
   // add new ones and remove old ones
-  for(const dvs_msgs::Event& e : msg->events)
+  for(const dvs_msgs::msg::Event& e : msg->events)
   {
     EQ.push_back(e);
     int i = EQ.size() - 2;
@@ -1150,7 +1150,7 @@ void esvo_MVStereo::eventSlicingForEM(std::vector<EventSlice>& eventSlices)
   size_t numSlice = std::floor(
     (t_upBound_.toSec() - t_lowBound_.toSec()) / EM_Slice_Thickness_);// a small number of events are ignored at this step.
   eventSlices.reserve(numSlice);
-  std::vector<dvs_msgs::Event *>::iterator it_tmp = vEventsPtr_left_.begin();
+  std::vector<dvs_msgs::msg::Event *>::iterator it_tmp = vEventsPtr_left_.begin();
   size_t totalNumEvent = 0;
   for (size_t i = 0; i < numSlice; i++)
   {
@@ -1177,7 +1177,7 @@ void esvo_MVStereo::eventSlicingForEM(std::vector<EventSlice>& eventSlices)
 }
 
 void esvo_MVStereo::createEdgeMask(
-  std::vector<dvs_msgs::Event *> &vEventsPtr,
+  std::vector<dvs_msgs::msg::Event *> &vEventsPtr,
   PerspectiveCamera::Ptr &camPtr,
   cv::Mat& edgeMap,
   std::vector<std::pair<size_t, size_t> >& vEdgeletCoordinates,
@@ -1222,7 +1222,7 @@ void esvo_MVStereo::createEdgeMask(
 }
 
 void esvo_MVStereo::createDenoisingMask(
-  std::vector<dvs_msgs::Event *>& vAllEventsPtr,
+  std::vector<dvs_msgs::msg::Event *>& vAllEventsPtr,
   cv::Mat& mask,
   size_t row, size_t col)
 {
@@ -1232,8 +1232,8 @@ void esvo_MVStereo::createDenoisingMask(
 }
 
 void esvo_MVStereo::extractDenoisedEvents(
-  std::vector<dvs_msgs::Event *> &vCloseEventsPtr,
-  std::vector<dvs_msgs::Event *> &vEdgeEventsPtr,
+  std::vector<dvs_msgs::msg::Event *> &vCloseEventsPtr,
+  std::vector<dvs_msgs::msg::Event *> &vEdgeEventsPtr,
   cv::Mat& mask,
   size_t maxNum)
 {

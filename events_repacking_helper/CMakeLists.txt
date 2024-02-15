@@ -1,28 +1,39 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(events_repacking_helper)
+cmake_minimum_required(VERSION 3.5)
+project(esvo_code)  # Update the project name to esvo_code
 
-## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
 
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
-find_package(catkin_simple REQUIRED COMPONENTS
-  rosbag
-  roscpp
-  rospy
-  std_msgs
-  sensor_msgs
-  geometry_msgs
+# Find packages
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+# Add any additional packages specific to esvo_code here
+
+# Include directories
+include_directories(
+  include
 )
 
-catkin_simple()
+# Declare a C++ executable
+# Update or add executables as per esvo_code requirements
+# For example, if esvo_code has different executables, declare them here
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O0")
+# Install the executable
+install(TARGETS
+  # Update the targets according to the executables declared above
+  DESTINATION lib/${PROJECT_NAME}
+)
 
-# make the executable
-cs_add_executable(EventMessageEditor src/EventMessageEditor.cpp)
-target_link_libraries(EventMessageEditor ${catkin_LIBARIES})
+# Install launch files, and any other directories esvo_code might need
+install(DIRECTORY
+  launch
+  # Add any additional directories to install
+  DESTINATION share/${PROJECT_NAME}
+)
 
-cs_add_executable(EventMessageEditor_Mono src/EventMessageEditor_Mono.cpp)
-target_link_libraries(EventMessageEditor_Mono ${catkin_LIBARIES})
+ament_package()

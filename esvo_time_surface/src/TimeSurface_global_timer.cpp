@@ -1,78 +1,72 @@
-#include <glog/logging.h>
-
-#include <ros/ros.h>
-#include <std_msgs/Time.h>
-
-#include <dvs_msgs/Event.h>
-#include <dvs_msgs/EventArray.h>
-
-#include <deque>
-#include <mutex>
-#include <unistd.h>
-
-#define TIME_SURFACE_SYNC 
+#include "rclcpp/rclcpp.hpp"
+#include "builtin_interfaces/msg/time.hpp"
+#include "dvs_msgs/msg/event_array.hpp"
+#include <chrono>
 
 int newEvents;
 
 template <typename T>
-T param(const ros::NodeHandle &nh, const std::string &name, const T &defaultValue)
+T param(const rclcpp::Node::SharedPtr &nh, const std::string &name, const T &defaultValue)
 {
-    if (nh.hasParam(name))
+    if (nh->has_parameter(name))
     {
         T v;
-        nh.param<T>(name, v, defaultValue);
-        ROS_INFO_STREAM("Found parameter: " << name << ", value: " << v);
+        nh->get_parameter(name, v);
+        RCLCPP_INFO_STREAM(nh->get_logger(), "Found parameter: " << name << ", value: " << v);
         return v;
     }
-    ROS_WARN_STREAM("Cannot find value for parameter: " << name << ", assigning default: " << defaultValue);
+    RCLCPP_WARN_STREAM(nh->get_logger(), "Cannot find value for parameter: " << name << ", assigning default: " << defaultValue);
     return defaultValue;
 }
 
-void eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg)
+void eventsCallback(const dvs_msgs::msg::EventArray::SharedPtr msg)
 {
     newEvents += msg->events.size();
 }
 
 int main(int argc, char *argv[])
 {
-    ros::init(argc, argv, "esvo_time_surface_global_timer");
+    rclcpp::init(argc, argv);
+    auto nh = rclcpp::Node::make_shared("esvo_time_surface_global_timer");
+    auto nh_private = std::make_shared<rclcpp::Node>("~");
 
-    ros::NodeHandle nh;
-    ros::NodeHandle nh_private("~");
-
-    const int MINIMUM_EVENTS = param(nh_private, "minimum_events", static_cast<int>(1000));
-    const int FREQUENCY_TIMER = param(nh_private, "frequency_timer", static_cast<int>(100));
-    const int MINIMUM_FREQUENCY_TIMER = param(nh_private, "minimum_frequency_timer", static_cast<int>(40));
-    ros::Subscriber event_sub = nh.subscribe("events", 0, eventsCallback);
-    ros::Publisher global_time_pub = nh.advertise<std_msgs::Time>("/sync", 1);
+    const int MINIMUM_EVENTS = param<int>(nh_private, "minimum_events", static_cast<int>(1000));
+    const int FREQUENCY_TIMER = param<int>(nh_private, "frequency_timer", static_cast<int>(100));
+    const int MINIMUM_FREQUENCY_TIMER = param<int>(nh_private, "minimum_frequency_timer", static_cast<int>(40));
+    auto event_sub = nh->create_subscription<dvs_msgs::msg::EventArray>("events", 0, eventsCallback);
+    auto global_time_pub = nh->create_publisher<builtin_interfaces::msg::Time>("/sync", 1);
 
     newEvents = 0;
-    double timestampLast = ros::WallTime::now().toSec();
-    while (ros::ok())
+    auto timestampLast = std::chrono::steady_clock::now();
+    rclcpp::Rate rate(FREQUENCY_TIMER);
+    while (rclcpp::ok())
     {
-        ros::spinOnce();
+        rclcpp::spin_some(nh);
+        auto currentTime = std::chrono::steady_clock::now();
+        auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - timestampLast).count();
 #ifdef TIME_SURFACE_SYNC
-        if (ros::WallTime::now().toSec() - timestampLast >= 1.0 / FREQUENCY_TIMER)
+        if (elapsedTime >= 1000 / FREQUENCY_TIMER)
         {
-            std_msgs::Time msg;
-            msg.data = ros::Time(ros::WallTime::now().toSec());
-            global_time_pub.publish(msg);
-            timestampLast = msg.data.toSec();
+            auto msg = std::make_shared<builtin_interfaces::msg::Time>();
+            msg->sec = nh->now().seconds();
+            msg->nanosec = nh->now().nanoseconds();
+            global_time_pub->publish(msg);
+            timestampLast = currentTime;
             newEvents = 0;
         }
 #else
-        if ((ros::WallTime::now().toSec() - timestampLast >= 1.0 / FREQUENCY_TIMER) && (newEvents >= MINIMUM_EVENTS)
-         || (ros::WallTime::now().toSec() - timestampLast >= 1.0 / MINIMUM_FREQUENCY_TIMER))
+        if ((elapsedTime >= 1000 / FREQUENCY_TIMER && newEvents >= MINIMUM_EVENTS) ||
+            (elapsedTime >= 1000 / MINIMUM_FREQUENCY_TIMER))
         {
-            // LOG_EVERY_N(INFO, 10) << (ros::WallTime::now().toSec() - timestampLast) * 1000 << " ms";
-            std_msgs::Time msg;
-            msg.data = ros::Time(ros::WallTime::now().toSec());
-            global_time_pub.publish(msg);
-            timestampLast = msg.data.toSec();
+            auto msg = std::make_shared<builtin_interfaces::msg::Time>();
+            msg->sec = nh->now().seconds();
+            msg->nanosec = nh->now().nanoseconds();
+            global_time_pub->publish(*msg);
+            timestampLast = currentTime;
             newEvents = 0;
         }
-#endif 
-        usleep(1e3); // 1ms
+#endif
+        rate.sleep();
     }
     return 0;
 }

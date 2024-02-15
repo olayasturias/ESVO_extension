@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>cnpy_colcon</name>
+  <version>0.0.0</version>
+  <description>A package for using cnpy with ROS2 via colcon build system.</description>
+  <maintainer email="rebecq@ifi.uzh.ch">Henri Rebecq</maintainer>
+  <license>See package</license>
+
+  <!-- Update the build tool to use ament instead of catkin -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- If there are ROS2 or other dependencies, list them here
+  <depend></depend>
+  -->
+
+  <!-- Example of a common ROS2 dependency, uncomment if needed
+  <depend>rclcpp</depend>
+  -->
+
+  <!-- Export the package's build flags -->
+  <export>
+    <!-- Other specific export rules for this package -->
+  </export>
+</package>

@@ -72,7 +72,7 @@ namespace esvo_core
 		mapping_rate_hz_ = tools::param(pnh_, "mapping_rate_hz", 20);
 
 		// callbacks functions
-		events_left_sub_ = nh_.subscribe<dvs_msgs::EventArray>("events_left", 10, boost::bind(&esvo_MVSMono::eventsCallback, this, _1, boost::ref(events_left_)));
+		events_left_sub_ = nh_.subscribe<dvs_msgs::msg::EventArray>("events_left", 10, boost::bind(&esvo_MVSMono::eventsCallback, this, _1, boost::ref(events_left_)));
 		stampedPose_sub_ = nh_.subscribe("stamped_pose", 10, &esvo_MVSMono::stampedPoseCallback, this);
 		TS_left_sub_ = nh_.subscribe("time_surface_left", 10, &esvo_MVSMono::timeSurfaceCallback, this);
 		// TF
@@ -531,7 +531,7 @@ namespace esvo_core
 		}
 	}
 
-	void esvo_MVSMono::eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg, EventQueue &EQ)
+	void esvo_MVSMono::eventsCallback(const dvs_msgs::msg::EventArray::ConstPtr &msg, EventQueue &EQ)
 	{
 		std::lock_guard<std::mutex> lock(data_mutex_);
 
@@ -551,7 +551,7 @@ namespace esvo_core
 		}
 
 		// add new ones and remove old ones
-		for (const dvs_msgs::Event &e : msg->events)
+		for (const dvs_msgs::msg::Event &e : msg->events)
 		{
 			EQ.push_back(e);
 			int i = EQ.size() - 2;
@@ -788,7 +788,7 @@ namespace esvo_core
 		pub.publish(msg);
 	}
 
-	void esvo_MVSMono::createEdgeMask(std::vector<dvs_msgs::Event *> &vEventsPtr,
+	void esvo_MVSMono::createEdgeMask(std::vector<dvs_msgs::msg::Event *> &vEventsPtr,
 									  PerspectiveCamera::Ptr &camPtr,
 									  cv::Mat &edgeMap,
 									  std::vector<std::pair<size_t, size_t>> &vEdgeletCoordinates,
@@ -833,7 +833,7 @@ namespace esvo_core
 	}
 
 	void esvo_MVSMono::createDenoisingMask(
-		std::vector<dvs_msgs::Event *> &vAllEventsPtr,
+		std::vector<dvs_msgs::msg::Event *> &vAllEventsPtr,
 		cv::Mat &mask,
 		size_t row, size_t col)
 	{
@@ -843,8 +843,8 @@ namespace esvo_core
 	}
 
 	void esvo_MVSMono::extractDenoisedEvents(
-		std::vector<dvs_msgs::Event *> &vCloseEventsPtr,
-		std::vector<dvs_msgs::Event *> &vEdgeEventsPtr,
+		std::vector<dvs_msgs::msg::Event *> &vCloseEventsPtr,
+		std::vector<dvs_msgs::msg::Event *> &vEdgeEventsPtr,
 		cv::Mat &mask,
 		size_t maxNum)
 	{

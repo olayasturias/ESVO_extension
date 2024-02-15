@@ -64,7 +64,7 @@ namespace esvo_core
     void timeSurfaceCallback(
         const sensor_msgs::ImageConstPtr &time_surface_left,
         const sensor_msgs::ImageConstPtr &time_surface_right);
-    void eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg);
+    void eventsCallback(const dvs_msgs::msg::EventArray::ConstPtr &msg);
 
     // results
     void publishPose(const ros::Time &t, Transformation &tr);

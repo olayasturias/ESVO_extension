@@ -134,7 +134,7 @@ void esvo_Mapping::MappingAtTime(const ros::Time &t)
 /**
  * @brief: initialize depth by block matching along epipolar line
  */
-bool esvo_core::core::EventBM::match_an_event(dvs_msgs::Event *pEvent,
+bool esvo_core::core::EventBM::match_an_event(dvs_msgs::msg::Event *pEvent,
                                               std::pair<size_t, size_t> &pDisparityBound,
                                               esvo_core::core::EventMatchPair &emPair)
 {

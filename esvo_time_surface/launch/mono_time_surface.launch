@@ -1,5 +1,5 @@
 <launch>
-  <rosparam param="/use_sim_time">true</rosparam>
+  <rosparam command="set" name="/use_sim_time" value="true"/>
 
   <!-- Time Surface (TS) generation -->
   <node name="TimeSurface_left" pkg="esvo_time_surface" type="esvo_time_surface" output="screen">
@@ -19,7 +19,7 @@
   </node> -->
 
   <!-- Synchronize both TS processing using an external timer -->
-  <node name="global_timer" pkg="rostopic" type="rostopic" args="pub -s -r 70 /sync std_msgs/Time 'now' " />
+  <node name="global_timer" pkg="ros2topic" type="ros2topic" args="pub -r 70 /sync std_msgs/msg/Time 'data: {sec: 0, nanosec: 0}' " />
 
   <!-- Visualization -->
   <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui"

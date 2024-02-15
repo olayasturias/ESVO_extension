@@ -51,7 +51,7 @@ namespace esvo_core
 		nh_.setParam("/ESVO_SYSTEM_STATUS", ESVO_System_Status_);
 
 		// online data callbacks
-		events_left_sub_ = nh_.subscribe<dvs_msgs::EventArray>(
+		events_left_sub_ = nh_.subscribe<dvs_msgs::msg::EventArray>(
 			"events_left", 0, &esvo_Tracking::eventsCallback, this);
 		TS_sync_.registerCallback(boost::bind(&esvo_Tracking::timeSurfaceCallback, this, _1, _2));
 		tf_ = std::make_shared<tf::Transformer>(true, ros::Duration(100.0));
@@ -290,11 +290,11 @@ namespace esvo_core
 	}
 
 	void esvo_Tracking::eventsCallback(
-		const dvs_msgs::EventArray::ConstPtr &msg)
+		const dvs_msgs::msg::EventArray::ConstPtr &msg)
 	{
 		std::lock_guard<std::mutex> lock(data_mutex_);
 		// add new ones and remove old ones
-		for (const dvs_msgs::Event &e : msg->events)
+		for (const dvs_msgs::msg::Event &e : msg->events)
 		{
 			events_left_.push_back(e);
 			int i = events_left_.size() - 2;

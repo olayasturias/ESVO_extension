@@ -4,14 +4,14 @@
 /**
  * @brief: Process incoming events
  */
-void TimeSurface::eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg)
+void TimeSurface::eventsCallback(const dvs_msgs::msg::EventArray::ConstPtr &msg)
 {
     std::lock_guard<std::mutex> lock(data_mutex_);
 
     if (!bSensorInitialized_)
         init(msg->width, msg->height);
 
-    for (const dvs_msgs::Event &e : msg->events)
+    for (const dvs_msgs::msg::Event &e : msg->events)
     {
         events_.push_back(e);
         int i = events_.size() - 2;
@@ -22,7 +22,7 @@ void TimeSurface::eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg)
         }
         events_[i + 1] = e;
 
-        const dvs_msgs::Event &last_event = events_.back();
+        const dvs_msgs::msg::Event &last_event = events_.back();
         pEventQueueMat_->insertEvent(last_event);
     }
     clearEventQueue();
@@ -56,7 +56,7 @@ void TimeSurface::createTimeSurfaceAtTime(const ros::Time &external_sync_time)
     {
         for (int x = 0; x < sensor_size_.width; ++x)
         {
-            dvs_msgs::Event most_recent_event_at_coordXY_before_T;
+            dvs_msgs::msg::Event most_recent_event_at_coordXY_before_T;
             if (pEventQueueMat_->getMostRecentEventBeforeT(x, y, external_sync_time, &most_recent_event_at_coordXY_before_T))
             {
                 const ros::Time &most_recent_stamp_at_coordXY = most_recent_event_at_coordXY_before_T.ts;

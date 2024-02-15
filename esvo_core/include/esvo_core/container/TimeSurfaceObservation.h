@@ -1,8 +1,8 @@
 #ifndef ESVO_CORE_CONTAINER_TIMESURFACEOBSERVATION_H
 #define ESVO_CORE_CONTAINER_TIMESURFACEOBSERVATION_H
 
-#include <dvs_msgs/Event.h>
-#include <dvs_msgs/EventArray.h>
+#include <dvs_msgs/msg/Event.h>
+#include <dvs_msgs/msg/EventArray.h>
 #include <cv_bridge/cv_bridge.h>
 
 #include <tf/tf.h>

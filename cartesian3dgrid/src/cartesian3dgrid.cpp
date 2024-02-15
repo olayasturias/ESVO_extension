@@ -1,4 +1,4 @@
-#include "../include/cartesian3dgrid/cartesian3dgrid.h"
+#include "cartesian3dgrid/cartesian3dgrid.h"
 
 #include <iostream>
 #include <vector>
@@ -87,12 +87,12 @@ void Grid3D::collapseMaxZSlice(cv::Mat *max_val, cv::Mat *max_pos_idx) const
  */
 double Grid3D::computeMeanSquare() const
 {
-  double result = 0.;
-  for (int i = 0; i < numCells_; i++)
-  {
-    double tmp = (double)data_array_.at(i);
-    result += tmp * tmp;
-  }
+    double result = 0.;
+    for (unsigned int i = 0; i < numCells_; i++)
+    {
+        double tmp = static_cast<double>(data_array_.at(i));
+        result += tmp * tmp;
+    }
 
-  return result / numCells_;
+    return result / numCells_;
 }

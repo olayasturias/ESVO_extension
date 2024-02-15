@@ -277,7 +277,7 @@ namespace esvo_core
 				TicToc t_pre;
 				double t_construct_EM;
 				
-				std::vector<dvs_msgs::Event *> vEventSubsetPtr;
+				std::vector<dvs_msgs::msg::Event *> vEventSubsetPtr;
 				vEventSubsetPtr.reserve(MAX_NUM_Event_INVOLVED);
 				m_buf_.lock();
 				auto ev_begin_it = events_left_.end() - MAX_NUM_Event_INVOLVED;
@@ -498,7 +498,7 @@ namespace esvo_core
 					if (events_left_.size() > MAX_NUM_Event_INVOLVED && rpSolver_.evalDegeneracy(&ref_, &cur_, lambda, DEGENERATE_THRESHOLD))
 					{
 						LOG(INFO) << "Switch to EM-based representation with Events: " << MAX_NUM_Event_INVOLVED << "!";
-						std::vector<dvs_msgs::Event *> vEventSubsetPtr;
+						std::vector<dvs_msgs::msg::Event *> vEventSubsetPtr;
 						vEventSubsetPtr.reserve(MAX_NUM_Event_INVOLVED);
 						auto ev_begin_it = events_left_.end() - MAX_NUM_Event_INVOLVED;
 						auto ev_end_it = events_left_.end();
@@ -718,11 +718,11 @@ namespace esvo_core
 			refPCMap_buf_.pop_front();
 	}
 
-	void Tracking::eventsCallback(const dvs_msgs::EventArray::ConstPtr &msg)
+	void Tracking::eventsCallback(const dvs_msgs::msg::EventArray::ConstPtr &msg)
 	{
 		std::lock_guard<std::mutex> lock(data_mutex_);
 		// add new ones and remove old ones
-		for (const dvs_msgs::Event &e : msg->events)
+		for (const dvs_msgs::msg::Event &e : msg->events)
 		{
 			events_left_.push_back(e);
 			int i = events_left_.size() - 2;

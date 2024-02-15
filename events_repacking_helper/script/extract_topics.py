@@ -1,68 +1,59 @@
-#!/usr/bin/python
-"""
-Copyright (c) 2012,
-Systems, Robotics and Vision Group
-University of the Balearican Islands
-All rights reserved.
+#!/usr/bin/env python3
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of Systems, Robotics and Vision Group, University of
-      the Balearican Islands nor the names of its contributors may be used to
-      endorse or promote products derived from this software without specific
-      prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-"""
-
-
-PKG = 'bag_tools' # this package name
-
-import roslib; roslib.load_manifest(PKG)
-import rospy
-import rosbag
+import rclpy
+from rclpy.node import Node
+import rosbag2_py
 import os
 import sys
 import argparse
 
-def extract_topics(inbag,outbag,topics):
-  rospy.loginfo('   Processing input bagfile: %s', inbag)
-  rospy.loginfo('  Writing to output bagfile: %s', outbag)
-  rospy.loginfo('          Extracting topics: %s', topics)
+class ExtractTopics(Node):
+    def __init__(self):
+        super().__init__('extract_topics')
 
-  outbag = rosbag.Bag(outbag,'w')
-  for topic, msg, t in rosbag.Bag(inbag,'r').read_messages():
-    if topic in topics:
-      outbag.write(topic, msg, t)
-  rospy.loginfo('Closing output bagfile and exit...')
-  outbag.close();
+    def extract_topics(self, inbag, outbag, topics):
+        self.get_logger().info(f'Processing input bagfile: {inbag}')
+        self.get_logger().info(f'Writing to output bagfile: {outbag}')
+        self.get_logger().info(f'Extracting topics: {topics}')
 
-if __name__ == "__main__":
-  rospy.init_node('extract_topics')
-  parser = argparse.ArgumentParser(
-      description='Extracts topics from a bagfile into another bagfile.')
-  parser.add_argument('inbag', help='input bagfile')
-  parser.add_argument('outbag', help='output bagfile')
-  parser.add_argument('topics', nargs='+', help='topics to extract')
-  args = parser.parse_args()
+        reader = rosbag2_py.SequentialReader()
+        storage_options = rosbag2_py.StorageOptions(uri=inbag, storage_id='sqlite3')
+        converter_options = rosbag2_py.ConverterOptions('', '')  # Empty means no conversion
+        reader.open(storage_options, converter_options)
 
-  try:
-    extract_topics(args.inbag,args.outbag,args.topics)
-  except Exception, e:
-    import traceback
-    traceback.print_exc()
+        writer = rosbag2_py.SequentialWriter()
+        writer.open(storage_options, converter_options)
 
+        topic_types = [(topic, reader.get_metadata().topics_with_message_count[topic].topic_metadata.type) for topic in topics]
+
+        for topic, type in topic_types:
+            writer.create_topic(rosbag2_py.TopicMetadata(name=topic, type=type, serialization_format='cdr'))
+
+        while reader.has_next():
+            (topic, data, t) = reader.read_next()
+            if topic in topics:
+                writer.write(topic, data, t)
+
+        self.get_logger().info('Closing output bagfile and exit...')
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = ExtractTopics()
+
+    parser = argparse.ArgumentParser(description='Extracts topics from a ROS2 bagfile into another bagfile.')
+    parser.add_argument('inbag', help='input bagfile')
+    parser.add_argument('outbag', help='output bagfile')
+    parser.add_argument('topics', nargs='+', help='topics to extract')
+    parsed_args = parser.parse_args()
+
+    try:
+        node.extract_topics(parsed_args.inbag, parsed_args.outbag, parsed_args.topics)
+    except Exception as e:
+        node.get_logger().error('Failed to extract topics: ' + str(e))
+        import traceback
+        traceback.print_exc()
+    finally:
+        rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()

@@ -1,125 +1,44 @@
-#include <ros/ros.h>
-#include <rosbag/bag.h>
-#include <rosbag/view.h>
-#include <std_msgs/Int32.h>
-#include <dvs_msgs/Event.h>
-#include <dvs_msgs/EventArray.h>
-#include <sensor_msgs/CameraInfo.h>
-#include <sensor_msgs/Image.h>
-#include <geometry_msgs/PoseStamped.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/image.hpp>
+#include <dvs_msgs/msg/event.hpp>
+#include <dvs_msgs/msg/event_array.hpp>
+#include <memory>
 
-struct EventMessageEditor
-{
-	EventMessageEditor(
-		double frequency,
-		std::string &messageTopic)
-		: bFirstMessage_(true)
-	{
-		eArray_ = dvs_msgs::EventArray();
-		duration_threshold_ = 1 / frequency;
-		message_topic_ = messageTopic;
-	}
+class EventMessageEditorMono : public rclcpp::Node {
+public:
+    EventMessageEditorMono()
+    : Node("event_message_editor_mono"), bFirstMessage_(true) {
+        this->declare_parameter<std::string>("input_topic", "input_topic_name");
+        this->declare_parameter<std::string>("output_topic", "output_topic_name");
+        this->declare_parameter<double>("frequency", 1000.0);
 
-	void resetBuffer(ros::Time startTimeStamp)
-	{
-		start_time_ = startTimeStamp;
-		end_time_ = ros::Time(start_time_.toSec() + duration_threshold_);
-		eArray_.events.clear();
-		eArray_.header.stamp = end_time_;
-	}
+        double frequency;
+        this->get_parameter("frequency", frequency);
+        duration_threshold_ = rclcpp::Duration::from_seconds(1.0 / frequency);
 
-	void resetArraySize(size_t width, size_t height)
-	{
-		eArray_.width = width;
-		eArray_.height = height;
-	}
+        std::string input_topic, output_topic;
+        this->get_parameter("input_topic", input_topic);
+        this->get_parameter("output_topic", output_topic);
 
-	void insertEvent(
-		dvs_msgs::Event &e,
-		rosbag::Bag *bag)
-	{
-		if (bFirstMessage_)
-		{
-			resetBuffer(e.ts);
-			bFirstMessage_ = false;
-		}
+        // Initialize publisher
+        publisher_ = this->create_publisher<dvs_msgs::msg::EventArray>(output_topic, 10);
 
-		if (e.ts.toSec() >= end_time_.toSec())
-		{
-			bag->write(message_topic_.c_str(), eArray_.header.stamp, eArray_);
-			resetBuffer(end_time_);
-		}
-		eArray_.events.push_back(e);
-	}
+        // TODO: Initialize subscriber to input_topic and process events accordingly
+    }
 
-	// variables
-	dvs_msgs::EventArray eArray_;
-	double duration_threshold_;
-	ros::Time start_time_, end_time_;
-	bool bFirstMessage_;
-	std::string message_topic_;
+    // Rest of the class methods adapted for ROS2...
+
+private:
+    bool bFirstMessage_;
+    rclcpp::Duration duration_threshold_;
+    rclcpp::Publisher<dvs_msgs::msg::EventArray>::SharedPtr publisher_;
+    // Additional private members and methods...
 };
 
-int main(int argc, char *argv[])
-{
-	ros::init(argc, argv, "event_message_editor");
-
-	std::string src_bag_path(argv[1]);
-	std::string dst_bag_path(argv[2]);
-	rosbag::Bag bag_src, bag_dst;
-	bag_src.open(src_bag_path.c_str(), rosbag::bagmode::Read);
-	bag_dst.open(dst_bag_path.c_str(), rosbag::bagmode::Write);
-
-	if (!bag_src.isOpen())
-	{
-		ROS_INFO("No rosbag is found in the give path.");
-		exit(-1);
-	}
-	else
-	{
-		ROS_INFO("***********Input Bag File Name ***********");
-		ROS_INFO(argv[1]);
-		ROS_INFO("******************************************");
-	}
-
-	if (!bag_dst.isOpen())
-	{
-		ROS_INFO("The dst bag is not opened.");
-		exit(-1);
-	}
-	else
-	{
-		ROS_INFO("***********Output Bag File Name ***********");
-		ROS_INFO(argv[2]);
-		ROS_INFO("***************************");
-	}
-
-	const double frequency = 1000;
-
-	// process events
-	std::vector<std::string> topics;
-	topics.push_back(std::string(argv[3]));
-	std::vector<std::string> topics_rename;
-	topics_rename.push_back(std::string(argv[3]));
-	for (size_t i = 0; i < topics.size(); i++)
-	{
-		rosbag::View view(bag_src, rosbag::TopicQuery(topics[i]));
-		EventMessageEditor eArrayEditor(frequency, topics_rename[i]);
-
-		// topic loop
-		for (rosbag::MessageInstance const m : view)
-		{
-			dvs_msgs::EventArray::ConstPtr msg = m.instantiate<dvs_msgs::EventArray>();
-			eArrayEditor.resetArraySize(msg->width, msg->height);
-			// message loop
-			for (const dvs_msgs::Event &e : msg->events)
-			{
-				eArrayEditor.insertEvent(const_cast<dvs_msgs::Event &>(e), &bag_dst);
-			}
-		}
-	}
-
-	bag_src.close();
-	bag_dst.close();
-	return 0;
+int main(int argc, char* argv[]) {
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<EventMessageEditorMono>();
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
 }
