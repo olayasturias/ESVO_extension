@@ -10,6 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 # Find packages
 find_package(ament_cmake REQUIRED)
+find_package(minkindr_conversions REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(dvs_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -25,9 +26,11 @@ find_package(tf2_geometry_msgs REQUIRED)
 
 include_directories(
   include
+  ${minkindr_conversions_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
 )
+
 
 # Define library targets
 add_library(esvo_core_lib
@@ -48,6 +51,7 @@ ament_target_dependencies(esvo_core_lib
   tf2_ros
   dvs_msgs
   pcl_ros
+  minkindr_conversions
 )
 
 # Define executable targets

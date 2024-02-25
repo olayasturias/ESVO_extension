@@ -1,15 +1,14 @@
 #ifndef ESVO_CORE_CONTAINER_TIMESURFACEOBSERVATION_H
 #define ESVO_CORE_CONTAINER_TIMESURFACEOBSERVATION_H
 
-#include <dvs_msgs/msg/Event.h>
-#include <dvs_msgs/msg/EventArray.h>
+#include <dvs_msgs/msg/event.hpp>
+#include <dvs_msgs/msg/event_array.hpp>
 #include <cv_bridge/cv_bridge.h>
 
-#include <tf/tf.h>
-#include <tf/tfMessage.h>
-#include <tf/transform_datatypes.h>
-#include <tf_conversions/tf_eigen.h>
-#include <kindr/minimal/quat-transformation.h>
+#include <tf2/transform_datatypes.h>
+#include <tf2_msgs/msg/tf_message.hpp>
+#include <tf2_eigen/tf2_eigen.h>
+#include <minkindr_conversions/quat-transformation.h>
 
 #include <opencv2/core/eigen.hpp>
 #include <opencv2/imgproc.hpp>

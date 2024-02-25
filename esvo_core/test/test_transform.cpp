@@ -3,7 +3,7 @@
 #include <tf/tf.h>
 #include <tf/tfMessage.h>
 #include <tf/transform_datatypes.h>
-#include <tf_conversions/tf_eigen.h>
+#include <tf2_eigen/tf2_eigen.h>
 #include <iostream>
 
 using namespace std;

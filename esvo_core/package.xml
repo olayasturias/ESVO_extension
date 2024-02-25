@@ -17,6 +17,8 @@
   <depend>tf2_ros</depend>
   <depend>tf2_geometry_msgs</depend> <!-- for tf2 conversions -->
   <depend>rclcpp</depend>
+  <depend>minkindr_conversions</depend>
+
   <!-- Add any ROS2 equivalents for the ROS1 dependencies that are missing -->
 
   <export>
